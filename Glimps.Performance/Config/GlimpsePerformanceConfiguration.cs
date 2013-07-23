@@ -22,7 +22,7 @@ namespace Glimpse.Performance.Config
         /// <summary>
         /// The enabled property. 
         /// </summary>
-        private static readonly ConfigurationProperty enabled =
+        private static readonly ConfigurationProperty EnabledConfigurationProperty =
             new ConfigurationProperty(
                 "enabled",
                 typeof(bool), 
@@ -32,7 +32,7 @@ namespace Glimpse.Performance.Config
         /// <summary>
         /// The storageProvider property.
         /// </summary>
-        private static readonly ConfigurationProperty storageProvider =
+        private static readonly ConfigurationProperty StorageProviderConfigurationProperty =
             new ConfigurationProperty(
                 "storageProvider",
                 typeof(string), 
@@ -42,7 +42,7 @@ namespace Glimpse.Performance.Config
         /// <summary>
         /// The MaxResults property. 
         /// </summary>
-        private static readonly ConfigurationProperty maxResults =
+        private static readonly ConfigurationProperty MaxResultsConfigurationProperty =
             new ConfigurationProperty(
                 "maxResults",
                 typeof(long), 
@@ -50,9 +50,9 @@ namespace Glimpse.Performance.Config
                 ConfigurationPropertyOptions.None);
 
         /// <summary>
-        /// The WarningThresholdMs property. 
+        /// The WarningThreshold (milliseconds) property. 
         /// </summary>
-        private static readonly ConfigurationProperty warningThresholdMs =
+        private static readonly ConfigurationProperty WarningThresholdMsConfigurationProperty =
             new ConfigurationProperty(
                 "warningThresholdMs",
                 typeof(long), 
@@ -60,9 +60,9 @@ namespace Glimpse.Performance.Config
                 ConfigurationPropertyOptions.None);
 
         /// <summary>
-        /// The 'IgnoreThresholdMs' property. 
+        /// The IgnoreThreshold (milliseconds) property. 
         /// </summary>
-        private static readonly ConfigurationProperty ignoreThresholdMs =
+        private static readonly ConfigurationProperty IgnoreThresholdMsConfigurationProperty =
             new ConfigurationProperty(
                 "ignoreThresholdMs",
                 typeof(long),
@@ -102,11 +102,11 @@ namespace Glimpse.Performance.Config
             properties =
                 new ConfigurationPropertyCollection();
 
-            properties.Add(enabled);
-            properties.Add(storageProvider);
-            properties.Add(maxResults);
-            properties.Add(warningThresholdMs);
-            properties.Add(ignoreThresholdMs);
+            properties.Add(EnabledConfigurationProperty);
+            properties.Add(StorageProviderConfigurationProperty);
+            properties.Add(MaxResultsConfigurationProperty);
+            properties.Add(WarningThresholdMsConfigurationProperty);
+            properties.Add(IgnoreThresholdMsConfigurationProperty);
         }
 
         /// <summary>
@@ -199,7 +199,7 @@ namespace Glimpse.Performance.Config
         }
 
         /// <summary>
-        /// Gets or sets the WarningThresholdMs property.
+        /// Gets or sets the WarningThreshold (milliseconds) property.
         /// </summary>
         [LongValidator(MinValue = 1, MaxValue = 1000000,
             ExcludeRange = false)]
@@ -217,7 +217,7 @@ namespace Glimpse.Performance.Config
         }
 
         /// <summary>
-        /// Gets or sets the IgnoreThresholdMs property.
+        /// Gets or sets the IgnoreThreshold (milliseconds) property.
         /// </summary>
         [LongValidator(MinValue = 0, MaxValue = 1000000,
             ExcludeRange = false)]
