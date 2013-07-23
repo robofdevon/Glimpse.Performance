@@ -75,6 +75,12 @@ namespace Glimpse.Performance.Config
             typeof(long), (long)100,
             ConfigurationPropertyOptions.None);
 
+        // The IgnoreThresholdMs property. 
+        private static readonly ConfigurationProperty _ignoreThresholdMs =
+            new ConfigurationProperty("ignoreThresholdMs",
+            typeof(long), (long)0,
+            ConfigurationPropertyOptions.None);
+
         // CustomSection constructor. 
         private GlimpsePerformanceConfiguration()
         {
@@ -86,6 +92,7 @@ namespace Glimpse.Performance.Config
             _Properties.Add(_storageProvider);
             _Properties.Add(_maxResults);
             _Properties.Add(_warningThresholdMs);
+            _Properties.Add(_ignoreThresholdMs);
         }
 
 
@@ -185,6 +192,20 @@ namespace Glimpse.Performance.Config
             set
             {
                 this["warningThresholdMs"] = value;
+            }
+        }
+
+        [LongValidator(MinValue = 0, MaxValue = 1000000,
+            ExcludeRange = false)]
+        public long IgnoreThresholdMs
+        {
+            get
+            {
+                return (long)this["ignoreThresholdMs"];
+            }
+            set
+            {
+                this["ignoreThresholdMs"] = value;
             }
         }
     }

@@ -20,6 +20,7 @@ namespace Glimpse.Performance.Core
         private IStorageProvider storageProvider;
         private long maxResults;
         private long warningThresholdMs;
+        private long ignoreThresholdMs;
 
         public override object GetData(ITabContext context)
         {
@@ -30,6 +31,7 @@ namespace Glimpse.Performance.Core
 
             maxResults = GlimpsePerformanceConfiguration.Instance.MaxResults;
             warningThresholdMs = GlimpsePerformanceConfiguration.Instance.WarningThresholdMs;
+            ignoreThresholdMs = GlimpsePerformanceConfiguration.Instance.IgnoreThresholdMs;
 
             var methodInfoCollection = storageProvider.Retreive();
             if (methodInfoCollection == null) 
@@ -44,20 +46,23 @@ namespace Glimpse.Performance.Core
             int outputCount = 0;
             foreach (var methodInfo in methodInfoCollection)
             {
-                if (outputCount < maxResults)
+                if (methodInfo.InvocationTimeMilliseconds > ignoreThresholdMs) 
                 {
-                    plugin.AddRow()
-                      .Column(methodInfo.Class)
-                      .Column(methodInfo.Method)
-                      .Column(methodInfo.Params)
-                      .Column(methodInfo.InvocationTimeMilliseconds)
-                      .WarnIf(methodInfo.InvocationTimeMilliseconds >= warningThresholdMs); //Warn if method takes longer than x ms to execute
+                    if (outputCount < maxResults)
+                    {
+                        plugin.AddRow()
+                          .Column(methodInfo.Class)
+                          .Column(methodInfo.Method)
+                          .Column(methodInfo.Params)
+                          .Column(methodInfo.InvocationTimeMilliseconds)
+                          .WarnIf(methodInfo.InvocationTimeMilliseconds >= warningThresholdMs); //Warn if method takes longer than x ms to execute
 
-                    outputCount++;
-                }
-                else 
-                {
-                    break;
+                        outputCount++;
+                    }
+                    else
+                    {
+                        break;
+                    }
                 }
             }
 
