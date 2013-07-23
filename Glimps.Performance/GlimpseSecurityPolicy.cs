@@ -1,3 +1,9 @@
+//-----------------------------------------------------------------------
+// <copyright file="GlimpseSecurityPolicy.cs" company="Rob Walker">
+//     Copyright (c) Rob Walker. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
+
 /*
 // Uncomment this class to provide custom runtime policy for Glimpse
 
