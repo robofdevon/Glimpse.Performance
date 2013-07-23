@@ -1,0 +1,9 @@
+﻿<configuration>
+  <configSections>
+    <section name="glimpsePerformanceConfiguration" type="Glimpse.Performance.Config.GlimpsePerformanceConfiguration, Glimpse.Performance" />  
+  </configSections>
+  <glimpsePerformanceConfiguration enabled="true"
+                                   maxResults="200"
+                                   warningThresholdMs="2000"
+                                   ignoreThresholdMs="-1" />
+</configuration>

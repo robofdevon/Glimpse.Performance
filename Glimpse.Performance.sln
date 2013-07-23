@@ -1,28 +1,25 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Glimpse.Performance", "Glimps.Performance\Glimpse.Performance.csproj", "{00A6EDB8-EE54-45DA-8879-C1630ED631D0}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{0095D8AC-C762-45B8-B708-3BFEC9D0786E}"
+	ProjectSection(SolutionItems) = preProject
+		Glimps.Performance\.nuget\NuGet.Config = Glimps.Performance\.nuget\NuGet.Config
+		Glimps.Performance\.nuget\NuGet.exe = Glimps.Performance\.nuget\NuGet.exe
+		Glimps.Performance\.nuget\NuGet.targets = Glimps.Performance\.nuget\NuGet.targets
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Glimpse.Performance", "Glimpse.Performance\Glimpse.Performance.csproj", "{00A6EDB8-EE54-45DA-8879-C1630ED631D0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
-		Debug|Mixed Platforms = Debug|Mixed Platforms
-		Debug|x86 = Debug|x86
 		Release|Any CPU = Release|Any CPU
-		Release|Mixed Platforms = Release|Mixed Platforms
-		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{00A6EDB8-EE54-45DA-8879-C1630ED631D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{00A6EDB8-EE54-45DA-8879-C1630ED631D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{00A6EDB8-EE54-45DA-8879-C1630ED631D0}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{00A6EDB8-EE54-45DA-8879-C1630ED631D0}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{00A6EDB8-EE54-45DA-8879-C1630ED631D0}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{00A6EDB8-EE54-45DA-8879-C1630ED631D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{00A6EDB8-EE54-45DA-8879-C1630ED631D0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{00A6EDB8-EE54-45DA-8879-C1630ED631D0}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{00A6EDB8-EE54-45DA-8879-C1630ED631D0}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{00A6EDB8-EE54-45DA-8879-C1630ED631D0}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
