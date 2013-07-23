@@ -7,5 +7,5 @@
 \\psf\Home\Documents\Visual Studio 2010\Projects\Glimpse.Performance\Glimps.Performance\obj\Debug\Glimpse.Performance.csprojResolveAssemblyReference.cache
 \\psf\Home\Documents\Visual Studio 2010\Projects\Glimpse.Performance\Glimps.Performance\obj\Debug\Glimpse.Performance.dll
 \\psf\Home\Documents\Visual Studio 2010\Projects\Glimpse.Performance\Glimps.Performance\obj\Debug\Glimpse.Performance.pdb
-\\psf\Home\Documents\Visual Studio 2010\Projects\Glimpse.Performance\Glimps.Performance\bin\Debug\Glimpse.Performance.pssym
-\\psf\Home\Documents\Visual Studio 2010\Projects\Glimpse.Performance\Glimps.Performance\obj\Debug\Glimpse.Performance.dll.postsharp
+\\psf\home\documents\visual studio 2010\Projects\Glimpse.Performance\Glimps.Performance\bin\Debug\Glimpse.Performance.pssym
+\\psf\home\documents\visual studio 2010\Projects\Glimpse.Performance\Glimps.Performance\obj\Debug\Glimpse.Performance.dll.postsharp
