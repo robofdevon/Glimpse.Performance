@@ -55,6 +55,7 @@
     <Compile Include="Aspect\BaseAdvisor.cs" />
     <Compile Include="Aspect\MethodInvocationInfo.cs" />
     <Compile Include="Aspect\MethodPerformanceAdvisor.cs" />
+    <None Include="web.config.transform" />
     <Compile Include="Config\GlimpsePerformanceConfiguration.cs" />
     <Compile Include="Core\PerformanceSnapshotTab.cs" />
     <Compile Include="Factory\StorageFactory.cs" />
@@ -69,6 +70,7 @@
     <None Include="Settings.StyleCop" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\icon.png" />
     <Content Include="License.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

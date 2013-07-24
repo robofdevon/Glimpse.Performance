@@ -15,16 +15,7 @@ The level of information captured by the Glimpse Performance Plugin is configura
 
 ### Quick start
 
-Prerequisites;
-- Download and install PostSharp 3 Express Edition (free license).
-
-1. Add Glimpse nuget package to your web application
-
-2. Add Glimpse Performance plugin to your web application project, and any other projects you wish to monitor
-
-3. Configure the assemblyinfo.cs file in each of your target projects. Add an assembly reference
-and use PostSharp's AttributeTargetTypes notation to target classes and namespaces. I.e. in the following example,
-all classes in the assembly will be targeted [assembly: MethodPerformanceAdvisor(AttributeTargetTypes = "*")] 
+Please find setup info here - http://walkernet.org.uk/glimpse-performance/docs/
 
 4. The Glimpse Performance plugin will have added a new configuration section to your web.config. Please set the attributes on
 the glimpsePerformanceConfiguration section as you with. The attributes are;

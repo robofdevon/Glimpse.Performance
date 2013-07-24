@@ -93,7 +93,7 @@ namespace Glimpse.Performance.Core
             if (methodInfoCollection == null) 
             {
                 return GlimpsePerformanceConfiguration.Instance.Enabled ?
-                    "No performance data available. Please check your configuration and PostSharp setup to ensure advice is being weaved into your target assemblies. Refer to documentation for more information." :
+                    "No performance data available. Please check your configuration and PostSharp setup to ensure advice is being weaved into your target assemblies. Refer to documentation for more information - http://walkernet.org.uk/glimpse-performance/docs/" :
                     "Glimpse preformance module is not enabled in the config. See the glimpsePerformanceConfiguration.enabled config section attribute.";
             }
 
