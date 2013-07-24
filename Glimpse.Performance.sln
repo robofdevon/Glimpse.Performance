@@ -1,13 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{0095D8AC-C762-45B8-B708-3BFEC9D0786E}"
-	ProjectSection(SolutionItems) = preProject
-		Glimps.Performance\.nuget\NuGet.Config = Glimps.Performance\.nuget\NuGet.Config
-		Glimps.Performance\.nuget\NuGet.exe = Glimps.Performance\.nuget\NuGet.exe
-		Glimps.Performance\.nuget\NuGet.targets = Glimps.Performance\.nuget\NuGet.targets
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Glimpse.Performance", "Glimpse.Performance\Glimpse.Performance.csproj", "{00A6EDB8-EE54-45DA-8879-C1630ED631D0}"
 EndProject
 Global
