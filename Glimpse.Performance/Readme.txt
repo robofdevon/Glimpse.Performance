@@ -13,11 +13,14 @@ Glimpse performance plugin is a Glimpse extension that allows you to monitor the
 The Glimpse performance plugin uses an AOP advisor to gather performance information about your application, and then makes it available to Glimpse.
 The level of information captured by the Glimpse Performance Plugin is configurable at compile and runtime.
 
+Please feel free to download the code from GitHub - https://github.com/robofdevon/Glimpse.Performance
+
 ### Quick start
 
 Please find setup info here - http://walkernet.org.uk/glimpse-performance/docs/
 
-4. The Glimpse Performance plugin will have added a new configuration section to your web.config. Please set the attributes on
+Config
+The Glimpse Performance plugin will have added a new configuration section to your web.config. Please set the attributes on
 the glimpsePerformanceConfiguration section as you with. The attributes are;
 - enabled = (true/false) turn monitoring on/off,
 - maxResults = controls the number of results sent down to the browser. By default results are stored in a stack structure, last in - first out.
