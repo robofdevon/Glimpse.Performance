@@ -55,7 +55,9 @@
     <Compile Include="Aspect\BaseAdvisor.cs" />
     <Compile Include="Aspect\MethodInvocationInfo.cs" />
     <Compile Include="Aspect\MethodPerformanceAdvisor.cs" />
-    <None Include="web.config.transform" />
+    <None Include="web.config.transform">
+      <SubType>Designer</SubType>
+    </None>
     <Compile Include="Config\GlimpsePerformanceConfiguration.cs" />
     <Compile Include="Core\PerformanceSnapshotTab.cs" />
     <Compile Include="Factory\StorageFactory.cs" />

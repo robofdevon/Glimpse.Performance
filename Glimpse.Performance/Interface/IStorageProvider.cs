@@ -28,5 +28,10 @@ namespace Glimpse.Performance.Interface
         /// </summary>
         /// <returns>A collection of stored <see cref="MethodInvocationInfo"/>.</returns>
         IEnumerable<MethodInvocationInfo> Retrieve();
+
+        /// <summary>
+        /// Clears any <see cref="MethodInvocationInfo"/> currently stored.
+        /// </summary>
+        void Clear();
     }
 }

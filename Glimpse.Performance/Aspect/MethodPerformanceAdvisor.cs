@@ -99,25 +99,101 @@ namespace Glimpse.Performance.Aspect
         /// <param name="args">The MethodExecutionArgs passed in from the subject method.</param> 
         public override void OnExit(MethodExecutionArgs args)
         {
-            // Don't log if not in a web request, relying on state
             // Don't log properties, this would be too verbose
             if (this.enabled && !this.IsProperty(args))
             {
-                var methodInfo = new MethodInvocationInfo
-                {
-                    Class = args.Method.DeclaringType.FullName,
-                    Method = args.Method.Name,
-                    Params = string.Join<ParameterInfo>(", ", args.Method.GetParameters()),
-                    InvocationTimeMilliseconds = Stopwatch.ElapsedMilliseconds - (long)args.MethodExecutionTag
-                };
-
-                if (this.storageProvider == null)
-                {
-                    this.storageProvider = StorageFactory.GetStorageProvider();
-                } 
-
-                this.storageProvider.Store(methodInfo);
+                var invacationTimeMilliseconds = this.GetInvocationTimeMilliseconds((long)args.MethodExecutionTag);
+                var methodInfo = this.GetMethodInvocationInfo(args, invacationTimeMilliseconds);
+                this.StoreMethodInvocationInfo(methodInfo);
             }
+        }
+
+        /// <summary>
+        /// Gets the method name from the <see cref="MethodExecutionArgs"/>
+        /// </summary>
+        /// <param name="args">The <see cref="MethodExecutionArgs"/> to extract the method name from.</param>
+        /// <returns>A method name.</returns>
+        protected virtual string GetMethodName(MethodExecutionArgs args)
+        {
+            string methodName = null;
+            if (args != null
+                && args.Method != null)
+            {
+                methodName = args.Method.Name;
+            }
+
+            return methodName;
+        }
+
+        /// <summary>
+        /// Gets the class name from the <see cref="MethodExecutionArgs"/>
+        /// </summary>
+        /// <param name="args">The <see cref="MethodExecutionArgs"/> to extract the class name from.</param>
+        /// <returns>A class name.</returns>
+        protected virtual string GetClassName(MethodExecutionArgs args)
+        {
+            string className = null;
+            if (args != null
+                && args.Method != null
+                && args.Method.DeclaringType != null)
+            {
+                className = args.Method.DeclaringType.FullName;
+            }
+
+            return className;
+        }
+
+        /// <summary>
+        /// Gets a comma delimited list of parameter names from the <see cref="MethodExecutionArgs"/>.
+        /// </summary>
+        /// <param name="args">The <see cref="MethodExecutionArgs"/> to extract the parameter names from.</param>
+        /// <returns>A comma delimited list of parameter names.</returns>
+        protected virtual string GetParameters(MethodExecutionArgs args)
+        {
+            return string.Join<ParameterInfo>(", ", args.Method.GetParameters());
+        }
+
+        /// <summary>
+        /// Gets a <see cref="MethodInvocationInfo"/> from the specified <see cref="MethodExecutionArgs"/> and invocation time.
+        /// </summary>
+        /// <param name="args">The <see cref="MethodExecutionArgs"/>.</param>
+        /// <param name="invocationTimeMilliseconds">The invocation time of the method in milliseconds.</param>
+        /// <returns>A <see cref="MethodInvocationInfo"/> object representing the method invocation.</returns>
+        protected virtual MethodInvocationInfo GetMethodInvocationInfo(MethodExecutionArgs args, long invocationTimeMilliseconds)
+        {
+            var methodInfo = new MethodInvocationInfo
+            {
+                Class = this.GetClassName(args),
+                Method = this.GetMethodName(args),
+                Params = this.GetParameters(args),
+                InvocationTimeMilliseconds = invocationTimeMilliseconds
+            };
+
+            return methodInfo;
+        }
+
+        /// <summary>
+        /// Gets the method invocation time from the specified time offset.
+        /// </summary>
+        /// <param name="startTimeOffset">The start time offset.</param>
+        /// <returns>The method invocation time in milliseconds.</returns>
+        protected virtual long GetInvocationTimeMilliseconds(long startTimeOffset)
+        {
+            return Stopwatch.ElapsedMilliseconds - startTimeOffset;
+        }
+
+        /// <summary>
+        /// Stores a <see cref="MethodInvocationInfo"/> using the configured storage provider.
+        /// </summary>
+        /// <param name="methodInvocationInfo">The method invocation information to store.</param>
+        protected virtual void StoreMethodInvocationInfo(MethodInvocationInfo methodInvocationInfo)
+        {
+            if (this.storageProvider == null)
+            {
+                this.storageProvider = StorageFactory.GetStorageProvider();
+            }
+
+            this.storageProvider.Store(methodInvocationInfo);
         }
     }
 }

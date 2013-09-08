@@ -6,17 +6,13 @@
 
 namespace Glimpse.Performance.Core
 {
+    using System.Collections.Generic;
     using Glimpse.AspNet.Extensibility;
     using Glimpse.Core.Extensibility;
     using Glimpse.Core.Tab.Assist;
-    using Glimpse.Performance.Aspect;
     using Glimpse.Performance.Config;
     using Glimpse.Performance.Factory;
     using Glimpse.Performance.Interface;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
 
     /// <summary>
     /// An <see cref="AspNetTab"/> glimpse tab plugin for displaying server side method performance information.
@@ -75,48 +71,69 @@ namespace Glimpse.Performance.Core
         /// <returns>The object for the glimpse core to render to the browser.</returns>
         public override object GetData(ITabContext context)
         {
+            this.InitialiseStorageProvider();
+            this.InitialiseSettings();
+            var performanceData = this.GetPerformanceData(this.storageProvider.Retrieve());
+            this.storageProvider.Clear();
+            return performanceData;
+        }
+
+        /// <summary>
+        /// Initializes the local storage provider property, if it has not been initialized already.
+        /// </summary>
+        protected virtual void InitialiseStorageProvider()
+        {
             // Setup the storage provider, ready for reading the methid data.
             if (this.storageProvider == null)
             {
                 this.storageProvider = StorageFactory.GetStorageProvider();
             }
+        }
 
-            // Pull in configured settings.
+        /// <summary>
+        /// Initializes the instance with configuration settings.
+        /// </summary>
+        protected virtual void InitialiseSettings()
+        {
             this.maxResults = GlimpsePerformanceConfiguration.Instance.MaxResults;
             this.warningThresholdMs = GlimpsePerformanceConfiguration.Instance.WarningThresholdMs;
             this.ignoreThresholdMs = GlimpsePerformanceConfiguration.Instance.IgnoreThresholdMs;
+        }
 
-            // Get the collection of method results.
-            var methodInfoCollection = this.storageProvider.Retrieve();
+        /// <summary>
+        /// Adds a row to the tab section, representing the <see cref="MethodInvocationInformation"/> instance passed.
+        /// </summary>
+        /// <param name="tabSection">The tabs section to add the row to.</param>
+        /// <param name="methodInformation">The data that will makeup the new row.</param>
+        protected virtual void AddPluginRow(TabSection tabSection, Aspect.MethodInvocationInfo methodInformation)
+        {
+            tabSection.AddRow()
+                    .Column(methodInformation.Class)
+                    .Column(methodInformation.Method)
+                    .Column(methodInformation.Params)
+                    .Column(methodInformation.InvocationTimeMilliseconds)
+                    .WarnIf(methodInformation.InvocationTimeMilliseconds >= this.warningThresholdMs);
+        }
 
-            // If no results are found, feed back to glimpse.
-            if (methodInfoCollection == null) 
+        /// <summary>
+        /// Gets a new glimpse tab section from the specified collection of <see cref="Aspect.MethodInvocationInfo"/>.
+        /// </summary>
+        /// <param name="performanceInformation">The performance information.</param>
+        /// <returns>A Glimpse tag section</returns>
+        protected virtual TabSection GetGlimpseTabSection(
+            IEnumerable<Aspect.MethodInvocationInfo> performanceInformation)
+        {
+            var glimpsePlugin = Plugin.Create("Class", "Method", "Parameters", "Execution Time (ms)");
+
+            int rowsAdded = 0;
+            foreach (var methodInformation in performanceInformation)
             {
-                return GlimpsePerformanceConfiguration.Instance.Enabled ?
-                    "No performance data available. Please check your configuration and PostSharp setup to ensure advice is being weaved into your target assemblies. Refer to documentation for more information - http://walkernet.org.uk/glimpse-performance/docs/" :
-                    "Glimpse preformance module is not enabled in the config. See the glimpsePerformanceConfiguration.enabled config section attribute.";
-            }
-
-            // Init the tab section plugin, setting up the columns.
-            var plugin = Plugin.Create("Class", "Method", "Parameters", "Execution Time (ms)");
-
-            // Iterate over each method info element
-            // checking settings and applying styles element by element.
-            int outputCount = 0;
-            foreach (var methodInfo in methodInfoCollection)
-            {
-                if (methodInfo.InvocationTimeMilliseconds > this.ignoreThresholdMs) 
+                if (methodInformation.InvocationTimeMilliseconds > this.ignoreThresholdMs)
                 {
-                    if (outputCount < this.maxResults)
+                    if (rowsAdded < this.maxResults)
                     {
-                        plugin.AddRow()
-                          .Column(methodInfo.Class)
-                          .Column(methodInfo.Method)
-                          .Column(methodInfo.Params)
-                          .Column(methodInfo.InvocationTimeMilliseconds)
-                          .WarnIf(methodInfo.InvocationTimeMilliseconds >= this.warningThresholdMs);
-
-                        outputCount++;
+                        this.AddPluginRow(glimpsePlugin, methodInformation);
+                        rowsAdded++;
                     }
                     else
                     {
@@ -125,7 +142,24 @@ namespace Glimpse.Performance.Core
                 }
             }
 
-            return plugin;
+            return glimpsePlugin;
+        }
+
+        /// <summary>
+        /// Gets the performance data object from the specified collection of <see cref="Aspect.MethodInvocationInfo"/>.
+        /// </summary>
+        /// <param name="performanceInformation">A collection of performance data.</param>
+        /// <returns>An object which glimpse can render in the web browser.</returns>
+        protected virtual object GetPerformanceData(IEnumerable<Aspect.MethodInvocationInfo> performanceInformation)
+        {
+            if (performanceInformation == null)
+            {
+                return GlimpsePerformanceConfiguration.Instance.Enabled
+                           ? "No performance data available. Please check your configuration and PostSharp setup to ensure advice is being weaved into your target assemblies. Refer to documentation for more information - http://walkernet.org.uk/glimpse-performance/docs/"
+                           : "Glimpse preformance module is not enabled in the config. See the glimpsePerformanceConfiguration.enabled config section attribute.";
+            }
+
+            return this.GetGlimpseTabSection(performanceInformation);
         }
     }
 }

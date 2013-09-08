@@ -6,12 +6,9 @@
 
 namespace Glimpse.Performance.Provider
 {
-    using Glimpse.Performance.Aspect;
-    using Glimpse.Performance.Interface;
-    using System;
+    using Aspect;
+    using Interface;
     using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
     using System.Web;
     
     /// <summary>
@@ -30,8 +27,12 @@ namespace Glimpse.Performance.Provider
         /// <param name="methodInfo">The <see cref="MethodInvocationInfo"/> to store into HttpContext state.</param>
         public void Store(MethodInvocationInfo methodInfo)
         {
-            this.Init();
-            ((Stack<MethodInvocationInfo>)HttpContext.Current.Items[StorageKey]).Push(methodInfo);
+            this.Initialise();
+            var storage = this.GetStorageCollection();
+            if (storage != null)
+            {
+                storage.Push(methodInfo);
+            }
         }
 
         /// <summary>
@@ -40,21 +41,59 @@ namespace Glimpse.Performance.Provider
         /// <returns>The stored collection of <see cref="MethodInvocationInfo"/></returns>
         public IEnumerable<MethodInvocationInfo> Retrieve()
         {
-            return HttpContext.Current.Items[StorageKey] as Stack<MethodInvocationInfo>;
+            return this.GetStorageCollection();
         }
 
         /// <summary>
-        /// Initializes the storage collection.
+        /// Clears any <see cref="MethodInvocationInfo"/> currently stored.
         /// </summary>
-        private void Init() 
+        public void Clear()
         {
-            lock (HttpContext.Current.Items)
+            var storage = this.GetStorageCollection();
+            if (storage != null)
             {
-                if (!HttpContext.Current.Items.Contains(StorageKey))
+                storage.Clear();
+            }
+        }
+
+        /// <summary>
+        /// Returns whether HttpContext state has been initialized.
+        /// </summary>
+        /// <returns><c>true</c> is HttpContext state has been initialized, false otherwise.</returns>
+        protected virtual bool HttpContextIsInitialised()
+        {
+            return HttpContext.Current != null;
+        }
+
+        /// <summary>
+        /// Initializes the storage provider.
+        /// </summary>
+        protected virtual void Initialise() 
+        {
+            if (this.HttpContextIsInitialised())
+            {
+                lock (HttpContext.Current.Items)
                 {
-                    HttpContext.Current.Items.Add(StorageKey, new Stack<MethodInvocationInfo>());
+                    if (!HttpContext.Current.Items.Contains(StorageKey))
+                    {
+                        HttpContext.Current.Items.Add(StorageKey, new Stack<MethodInvocationInfo>());
+                    }
                 }
             }
+        }
+
+        /// <summary>
+        /// Gets the storage collection instance.
+        /// </summary>
+        /// <returns>The storage collection instance.</returns>
+        protected virtual Stack<MethodInvocationInfo> GetStorageCollection()
+        {
+            if (this.HttpContextIsInitialised())
+            {
+                return HttpContext.Current.Items[StorageKey] as Stack<MethodInvocationInfo>;
+            }
+
+            return null;
         }
     }
 }
