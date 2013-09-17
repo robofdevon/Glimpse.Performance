@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Glimpse.Performance.Interface
+namespace Glimpse.Performance.Storage
 {
     using Glimpse.Performance.Aspect;
     using System;
@@ -18,19 +18,19 @@ namespace Glimpse.Performance.Interface
     public interface IStorageProvider
     {
         /// <summary>
-        /// Store the instance of <see cref="MethodInvocationInfo"/>.
+        /// Store the instance of <see cref="MethodInvocation"/>.
         /// </summary>
-        /// <param name="methodInfo">The instance of <see cref="MethodInvocationInfo"/> to store.</param>
-        void Store(MethodInvocationInfo methodInfo);
+        /// <param name="methodInvocation">The instance of <see cref="MethodInvocation"/> to store.</param>
+        void Store(MethodInvocation methodInvocation);
 
         /// <summary>
-        /// Retrieve a collection of stored <see cref="MethodInvocationInfo"/>.
+        /// Retrieve a collection of stored <see cref="MethodInvocation"/>.
         /// </summary>
-        /// <returns>A collection of stored <see cref="MethodInvocationInfo"/>.</returns>
-        IEnumerable<MethodInvocationInfo> Retrieve();
+        /// <returns>A collection of stored <see cref="MethodInvocation"/>.</returns>
+        IEnumerable<MethodInvocation> Retrieve();
 
         /// <summary>
-        /// Clears any <see cref="MethodInvocationInfo"/> currently stored.
+        /// Clears any <see cref="MethodInvocation"/> currently stored.
         /// </summary>
         void Clear();
     }

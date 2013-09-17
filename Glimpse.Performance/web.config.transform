@@ -1,6 +1,6 @@
 ﻿<configuration>
   <configSections>
-    <section name="glimpsePerformanceConfiguration" type="Glimpse.Performance.Config.GlimpsePerformanceConfiguration, Glimpse.Performance" />  
+    <section name="glimpsePerformanceConfiguration" type="Glimpse.Performance.Config.GlimpsePerformanceConfigurationSection, Glimpse.Performance" />  
   </configSections>
   <glimpsePerformanceConfiguration enabled="true"
                                    maxResults="200"
