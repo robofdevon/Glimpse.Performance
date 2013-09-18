@@ -7,169 +7,92 @@
 namespace Glimpse.Performance.Aspect
 {
     using Config;
-    using PostSharp.Aspects;
     using System;
-    using System.Reflection;
     using Time;
     using Storage;
+    using Conversion;
     
     [Serializable]
     public class MethodPerformanceAdvisor : BaseAdvisor
     {
-        //todo: look at refactoring this class, cut the responsibilities up
-        private static IStopwatch _stopWatch;
-        private static readonly object SyncRoot = new object();
-        private readonly IGlimpsePerformanceConfiguration _glimpsePerformanceConfiguration;
-        private bool _enabled;
-        private bool _isInitialised;
-        private IStorageProvider _storageProvider;
+        protected static IStopwatch Stopwatch;
 
         static MethodPerformanceAdvisor()
         {
-            _stopWatch = new Stopwatch();
-            _stopWatch.Start();
+            Stopwatch = new Stopwatch();
+            Stopwatch.Start();
         }
 
         public MethodPerformanceAdvisor()
         {
-            _glimpsePerformanceConfiguration = new GlimpsePerformanceConfiguration();
+            GlimpsePerformanceConfiguration = new GlimpsePerformanceConfiguration();
+            ConversionHelper = new ConversionHelper();
+            StorageFactory = new StorageFactory();
         }
 
-        public MethodPerformanceAdvisor(IStopwatch stopWatch, 
+        public MethodPerformanceAdvisor(IStopwatch stopwatch, 
             IGlimpsePerformanceConfiguration glimpsePerformanceConfiguration,
-            IStorageProvider storageProvider)
+            IStorageFactory storageFactory,
+            IConversionHelper conversionHelper)
         {
-            _glimpsePerformanceConfiguration = glimpsePerformanceConfiguration;
-            _stopWatch = stopWatch;
-            _storageProvider = storageProvider;
-            _stopWatch.Start();
+            GlimpsePerformanceConfiguration = glimpsePerformanceConfiguration;
+            Stopwatch = stopwatch;
+            StorageFactory = storageFactory;
+            Stopwatch.Start();
+            ConversionHelper = conversionHelper;
         }
 
-        public override void OnEntry(MethodExecutionArgs args)
+        protected override void Initialise()
         {
-            MethodExecutionArguments = args;
-            Initialise();
-            SetStartTime();
-        }
-
-        public override void OnExit(MethodExecutionArgs args)
-        {
-            MethodExecutionArguments = args;
-            ProcessMethodExit();
-        }
-
-        protected virtual void Initialise()
-        {
-            if(!_isInitialised)
+            if(!IsInitialised)
             {
                 lock (SyncRoot)
                 {
                     InitialiseSettings();
-                    InitialiseStopwatch();
-                    _isInitialised = true;
+                    InitialiseStartTime();
+                    IsInitialised = true;
                 }
             }
         }
 
-        protected virtual void SetStartTime()
+        protected virtual void InitialiseStartTime()
         {
-            if (_enabled && !IsProperty())
+            if (DoMonitoring())
             {
-                MethodExecutionArguments.MethodExecutionTag = _stopWatch.ElapsedMilliseconds;
+                MethodExecutionArguments.MethodExecutionTag = Stopwatch.ElapsedMilliseconds;
             }
         }
 
-        protected virtual void InitialiseSettings()
+        protected override void Finalise()
         {
-            _enabled = _glimpsePerformanceConfiguration.Enabled;
-        }
-
-        protected virtual void InitialiseStopwatch()
-        {
-            if (_enabled && !IsProperty())
-            {
-                MethodExecutionArguments.MethodExecutionTag = _stopWatch.ElapsedMilliseconds;
-            }
-        }
-
-        protected virtual void ProcessMethodExit()
-        {
-            if (_enabled && !IsProperty())
+            if (DoMonitoring())
             {
                 var invacationTimeMilliseconds = GetInvocationTimeMilliseconds();
-                var methodInvocation = GetMethodInvocation(invacationTimeMilliseconds);
+                var methodInvocation = ConversionHelper.ToMethodInvocation(MethodExecutionArguments, invacationTimeMilliseconds);
                 StoreMethodInvocation(methodInvocation);
             }
         }
 
-        protected virtual string GetMethodName()
+        protected virtual bool DoMonitoring()
         {
-            string methodName = null;
-            if (MethodExecutionArguments != null
-                && MethodExecutionArguments.Method != null)
-            {
-                methodName = MethodExecutionArguments.Method.Name;
-            }
-
-            return methodName;
-        }
-
-        protected virtual string GetClassName()
-        {
-            string className = null;
-            if (MethodExecutionArguments != null
-                && MethodExecutionArguments.Method != null
-                && MethodExecutionArguments.Method.DeclaringType != null)
-            {
-                className = MethodExecutionArguments.Method.DeclaringType.FullName;
-            }
-
-            return className;
-        }
-
-        protected virtual string GetParameters()
-        {
-            if (MethodExecutionArguments == null
-                || MethodExecutionArguments.Method == null)
-            {
-                return "";
-            }
-
-            return string.Join<ParameterInfo>(", ", MethodExecutionArguments.Method.GetParameters());
-        }
-
-        protected virtual MethodInvocation GetMethodInvocation(long invocationTimeMilliseconds)
-        {
-            return new MethodInvocation
-            {
-                ClassName = GetClassName(),
-                MethodName = GetMethodName(),
-                Parameters = GetParameters(),
-                InvocationTimeMilliseconds = invocationTimeMilliseconds
-            };
+            return Enabled && !IsProperty();
         }
 
         protected virtual long GetInvocationTimeMilliseconds()
         {
-            var stopTime = _stopWatch.ElapsedMilliseconds;
+            var stopTime = Stopwatch.ElapsedMilliseconds;
             var startTime = (long)MethodExecutionArguments.MethodExecutionTag;
             return stopTime - startTime;
         }
 
         protected virtual void StoreMethodInvocation(MethodInvocation methodInvocation)
         {
-            if (_storageProvider == null)
+            if (StorageProvider == null)
             {
-                _storageProvider = GetStorageFactory().Get();
+                StorageProvider = StorageFactory.Get();
             }
 
-            _storageProvider.Store(methodInvocation);
-        }
-
-        //todo: dependency inversion
-        protected virtual IStorageFactory GetStorageFactory()
-        {
-            return new StorageFactory();
+            StorageProvider.Store(methodInvocation);
         }
     }
 }

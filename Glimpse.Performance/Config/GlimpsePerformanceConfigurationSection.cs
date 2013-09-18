@@ -66,24 +66,29 @@ namespace Glimpse.Performance.Config
             {
                 if (_instance == null)
                 {
-                    lock (SyncRoot)
-                    {
-                        if (_instance == null)
-                        {
-                            _instance =
-                                ConfigurationManager
-                                    .GetSection("glimpsePerformanceConfiguration")
-                                    as GlimpsePerformanceConfigurationSection;
-
-                            if (_instance == null)
-                            {
-                                _instance = new GlimpsePerformanceConfigurationSection();
-                            }
-                        }
-                    }
+                    InitialiseInstance();
                 }
 
                 return _instance;
+            }
+        }
+
+        private static void InitialiseInstance()
+        {
+            lock (SyncRoot)
+            {
+                if (_instance == null)
+                {
+                    _instance =
+                        ConfigurationManager
+                            .GetSection("glimpsePerformanceConfiguration")
+                            as GlimpsePerformanceConfigurationSection;
+
+                    if (_instance == null)
+                    {
+                        _instance = new GlimpsePerformanceConfigurationSection();
+                    }
+                }
             }
         }
 

@@ -14,11 +14,22 @@ namespace Glimpse.Performance.Storage
     public class HttpContextStorageProvider : IStorageProvider
     {
         private const string StorageKey = "_methodInfo";
+        protected HttpContext HttpContextState;
+
+        public HttpContextStorageProvider() : this(HttpContext.Current)
+        {
+
+        }
+
+        public HttpContextStorageProvider(HttpContext httpContext)
+        {
+            HttpContextState = httpContext;
+            Initialise();
+        }
 
         public void Store(MethodInvocation methodInvocation)
         {
-            this.Initialise();
-            var storage = this.GetStorageCollection();
+            var storage = GetStorageCollection();
             if (storage != null)
             {
                 storage.Push(methodInvocation);
@@ -27,12 +38,12 @@ namespace Glimpse.Performance.Storage
 
         public IEnumerable<MethodInvocation> Retrieve()
         {
-            return this.GetStorageCollection();
+            return GetStorageCollection();
         }
 
         public void Clear()
         {
-            var storage = this.GetStorageCollection();
+            var storage = GetStorageCollection();
             if (storage != null)
             {
                 storage.Clear();
@@ -41,28 +52,33 @@ namespace Glimpse.Performance.Storage
 
         protected virtual bool HttpContextIsInitialised()
         {
-            return HttpContext.Current != null;
+            return HttpContextState != null;
         }
 
-        protected virtual void Initialise() 
+        protected void Initialise() 
         {
-            if (this.HttpContextIsInitialised())
+            if (HttpContextIsInitialised())
             {
-                lock (HttpContext.Current.Items)
+                InitialiseStorageCollection();
+            }
+        }
+
+        protected void InitialiseStorageCollection()
+        {
+            lock (HttpContextState.Items)
+            {
+                if (!HttpContextState.Items.Contains(StorageKey))
                 {
-                    if (!HttpContext.Current.Items.Contains(StorageKey))
-                    {
-                        HttpContext.Current.Items.Add(StorageKey, new Stack<MethodInvocation>());
-                    }
+                    HttpContextState.Items.Add(StorageKey, new Stack<MethodInvocation>());
                 }
             }
         }
 
         protected virtual Stack<MethodInvocation> GetStorageCollection()
         {
-            if (this.HttpContextIsInitialised())
+            if (HttpContextIsInitialised())
             {
-                return HttpContext.Current.Items[StorageKey] as Stack<MethodInvocation>;
+                return HttpContextState.Items[StorageKey] as Stack<MethodInvocation>;
             }
 
             return null;

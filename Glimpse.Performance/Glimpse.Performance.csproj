@@ -55,10 +55,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Aspect\BaseAdvisor.cs" />
+    <Compile Include="Aspect\MethodExecutionArgsExtensions.cs" />
     <Compile Include="Aspect\MethodInvocation.cs" />
     <Compile Include="Aspect\MethodPerformanceAdvisor.cs" />
     <Compile Include="Config\GlimpsePerformanceConfiguration.cs" />
     <Compile Include="Config\IGlimpsePerformanceConfiguration.cs" />
+    <Compile Include="Conversion\ConversionHelper.cs" />
+    <Compile Include="Conversion\IConversionHelper.cs" />
     <Compile Include="Storage\IStorageFactory.cs" />
     <Compile Include="Time\IStopWatch.cs" />
     <Compile Include="Time\StopWatch.cs" />

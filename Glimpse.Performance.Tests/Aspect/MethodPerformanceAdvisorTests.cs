@@ -4,6 +4,8 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using Glimpse.Performance.Conversion;
+
 namespace Glimpse.Performance.Aspect
 {
     using System.Reflection;
@@ -20,13 +22,19 @@ namespace Glimpse.Performance.Aspect
         protected Mock<IGlimpsePerformanceConfiguration> GlimpsePerformanceConfigurationMock;
         protected Mock<IStopwatch> StopwatchMock;
         protected Mock<IStorageProvider> StorageProviderMock;
+        protected Mock<IStorageFactory> StorageFactoryMock;
+        protected Mock<IConversionHelper> ConversionHelperMock;
 
         [SetUp]
         public void SetUp()
         {
             GlimpsePerformanceConfigurationMock = new Mock<IGlimpsePerformanceConfiguration>();
             StopwatchMock = new Mock<IStopwatch>();
+            ConversionHelperMock = new Mock<IConversionHelper>();
             StorageProviderMock = new Mock<IStorageProvider>();
+            StorageFactoryMock = new Mock<IStorageFactory>();
+            StorageFactoryMock.Setup(m => m.Get())
+                              .Returns(StorageProviderMock.Object);
         }
 
         [TearDown]
@@ -35,9 +43,9 @@ namespace Glimpse.Performance.Aspect
             GlimpsePerformanceConfigurationMock = null;
             StopwatchMock = null;
             StorageProviderMock = null;
+            ConversionHelperMock = null;
+            StorageFactoryMock = null;
         }
-
-        
 
         [Test]
         public void OnEntry_StartsStopwatch()
@@ -123,21 +131,30 @@ namespace Glimpse.Performance.Aspect
             var startDuration = 10L;
             var endDuration = 100L;
             var expectedElapsedDuration = 90L;
+
             MethodInvocation storedMethodInvocation = null;
 
             StopwatchMock.Setup(m => m.ElapsedMilliseconds)
                          .Returns(endDuration);
 
             GlimpsePerformanceConfigurationMock.Setup(m => m.Enabled)
-                                               .Returns(true);
+                         .Returns(true);
+
+            ConversionHelperMock.Setup(m => m.ToMethodInvocation(It.IsAny<MethodExecutionArgs>(), It.IsAny<long>()))
+                         .Returns(new MethodInvocation
+                             {
+                                 ClassName = "Glimpse.Performance.Aspect.MethodPerformanceAdvisorTests",
+                                 InvocationTimeMilliseconds = expectedElapsedDuration,
+                                 MethodName = "GetMethod_MethodBase",
+                                 Parameters = ""
+                             });
 
             StorageProviderMock.Setup(m => m.Store(It.IsAny<MethodInvocation>()))
-                               .Callback<MethodInvocation>(mi => storedMethodInvocation = mi);
+                         .Callback<MethodInvocation>(mi => storedMethodInvocation = mi);
 
             var methodPerformanceAdvisor = GetPerformanceAdvisorWithInjectedMocks();
             var methodExecutionArgs = new MethodExecutionArgs(null, null);
             methodExecutionArgs.Method = GetMethod_MethodBase();
-            
 
             //Act
             //must do onentry to set enabled
@@ -167,7 +184,8 @@ namespace Glimpse.Performance.Aspect
         {
             return new MethodPerformanceAdvisor(StopwatchMock.Object,
                                                 GlimpsePerformanceConfigurationMock.Object,
-                                                StorageProviderMock.Object);
+                                                StorageFactoryMock.Object,
+                                                ConversionHelperMock.Object);
         }
     }
 }
